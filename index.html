@@ -19,7 +19,6 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .app-title{font-size:11px;font-family:'DM Mono',monospace;letter-spacing:.22em;
   color:var(--accent);text-transform:uppercase;margin-bottom:18px;opacity:.85;font-weight:400}
 
-/* ── banners ── */
 .banner{width:100%;max-width:960px;border-radius:var(--radius);padding:11px 16px;
   margin-bottom:10px;font-size:12px;line-height:1.85;display:flex;align-items:flex-start;gap:10px}
 .banner b{font-weight:500}
@@ -33,8 +32,9 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
   display:none;flex-direction:column;gap:4px}
 #codec-banner .ctitle{color:var(--danger);font-weight:500;font-size:13px}
 #codec-banner .csub{color:rgba(240,240,240,.6);font-size:12px;line-height:1.9}
+#browser-banner{background:rgba(200,169,110,.07);border:1px solid rgba(200,169,110,.18);
+  display:flex;margin-bottom:10px;font-size:11px;flex-wrap:wrap}
 
-/* ── drop row ── */
 #drop-row{width:100%;max-width:960px;display:flex;gap:10px}
 #dropzone{flex:1;border:1.5px dashed var(--border2);border-radius:var(--radius);
   padding:38px 24px;text-align:center;cursor:pointer;
@@ -54,12 +54,10 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 #ext-sub-zone p{font-size:11px;color:var(--muted);line-height:1.6;font-family:'DM Mono',monospace}
 #esz-name{font-size:10px;color:var(--success);word-break:break-all;padding:0 4px;display:none}
 
-/* ── fn bar ── */
 #fn-bar{width:100%;max-width:960px;margin:6px 0 3px;display:none;
   font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ── player ── */
 #player-wrap{width:100%;max-width:960px;display:none;flex-direction:column}
 #resize-bar{display:flex;align-items:center;gap:6px;padding:3px 0 6px;flex-wrap:wrap}
 #resize-bar .rl{font-size:10px;font-family:'DM Mono',monospace;color:var(--muted)}
@@ -67,65 +65,64 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
   border-radius:5px;padding:2px 9px;font-size:10px;font-family:'DM Mono',monospace;cursor:pointer;transition:all .14s}
 .sz-btn:hover,.sz-btn.active{background:rgba(200,169,110,.1);border-color:var(--accent);color:var(--accent)}
 
-/* ── video container ── */
-/* outer div is resizable; inner video fills it */
-#video-container{
-  position:relative;background:#000;
-  border-radius:var(--radius) var(--radius) 0 0;
-  overflow:hidden;
-  resize:both;
-  width:100%;min-width:300px;min-height:160px;
-  height:460px;
-  /* amber corner hint */
-  box-shadow:inset -5px -5px 0 0 rgba(200,169,110,.2);
-}
-/* PiP mode: canvas fills container instead of video */
-#pip-canvas{
-  position:absolute;inset:0;width:100%;height:100%;
-  display:none;object-fit:contain;
-}
+#video-container{position:relative;background:#000;border-radius:var(--radius) var(--radius) 0 0;
+  overflow:hidden;resize:both;width:100%;min-width:300px;min-height:160px;height:460px;
+  box-shadow:inset -5px -5px 0 0 rgba(200,169,110,.2)}
+#pip-canvas{position:absolute;inset:0;width:100%;height:100%;display:none;object-fit:contain}
 #video-el{width:100%;height:100%;object-fit:contain;display:block}
 
-/* ── subtitle overlay ── */
+/* subtitle overlay - 중앙 정렬 */
 #sub-overlay{
-  position:absolute;left:0;right:0;bottom:14px;
-  display:flex;flex-direction:column;align-items:center;
-  pointer-events:none;padding:0 16px;gap:3px;z-index:6;
-  /* Safari: force own compositing layer — prevents overlay duplication in webkit fullscreen */
-  -webkit-transform:translateZ(0);
-  transform:translateZ(0);
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  padding:0 20px;
+  gap:4px;
+  z-index:6;
+  text-align:center;
 }
-/* Safari: ensure sub-overlay position never bleeds from webkit-full-screen rules in normal mode */
-#video-container:not(:-webkit-full-screen) #sub-overlay{
-  bottom:14px !important;
+/* PiP 모드일 때 메인 자막 숨김 (이중 출력 방지) */
+.pip-active #sub-overlay{
+  display:none !important;
 }
-#video-container:not(:-webkit-full-screen) .sub-line{
-  font-size:17px !important;
+.sub-line{
+  background:var(--sub-bg);
+  color:#fff;
+  line-height:1.5;
+  padding:6px 18px;
+  border-radius:8px;
+  max-width:90%;
+  display:inline-block;
+  text-align:center;
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  word-break:break-word;
+  font-weight:500;
 }
-.sub-line{background:var(--sub-bg);color:#fff;line-height:1.5;
-  padding:3px 14px;border-radius:3px;max-width:90%;text-align:center;
-  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
-  word-break:break-word;font-size:17px}
 
-/* fullscreen styles — MUST be separate rules, never comma-combined.
-   Browsers silently drop an entire selector group if one selector is unrecognised.
-   Safari only understands :-webkit-full-screen; Chrome only :fullscreen. */
-
-/* Chrome / Firefox */
-#video-container:fullscreen{
-  width:100vw !important;height:100vh !important;resize:none;border-radius:0;
+#video-container:fullscreen,
+#video-container:-webkit-full-screen {
+  width:100vw !important;
+  height:100vh !important;
+  resize:none;
+  border-radius:0;
 }
-#video-container:fullscreen #sub-overlay{ bottom:56px; }
-#video-container:fullscreen .sub-line{ font-size:clamp(16px,2.6vw,30px) !important; }
-
-/* Safari */
-#video-container:-webkit-full-screen{
-  width:100vw !important;height:100vh !important;resize:none;border-radius:0;
+#video-container:fullscreen #sub-overlay,
+#video-container:-webkit-full-screen #sub-overlay {
+  bottom:70px;
 }
-#video-container:-webkit-full-screen #sub-overlay{ bottom:56px; }
-#video-container:-webkit-full-screen .sub-line{ font-size:clamp(16px,2.6vw,30px) !important; }
+#video-container:fullscreen .sub-line,
+#video-container:-webkit-full-screen .sub-line {
+  font-size:clamp(18px, 3vw, 36px) !important;
+  padding:8px 24px;
+}
 
-/* ── controls ── */
 #controls{background:var(--surface);border:1px solid var(--border);border-top:none;
   border-radius:0 0 var(--radius) var(--radius);padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px}
 #progress-wrap{position:relative;height:4px;background:var(--surface2);border-radius:2px;cursor:pointer;transition:height .1s}
@@ -148,7 +145,6 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 #vol-slider{-webkit-appearance:none;width:62px;height:3px;background:var(--surface2);border-radius:2px;outline:none;cursor:pointer}
 #vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;background:var(--accent);border-radius:50%}
 
-/* ── sub panel ── */
 #sub-panel{width:100%;max-width:960px;margin-top:8px;background:var(--surface);
   border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;display:none}
 #sub-panel.show{display:block}
@@ -160,21 +156,18 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
   transition:all .14s;font-family:'DM Mono',monospace;white-space:nowrap}
 .track-btn:hover{border-color:var(--border2);color:var(--text)}
 .track-btn.active{background:rgba(200,169,110,.12);border-color:var(--accent);color:var(--accent)}
-#sub-ctrl{display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;
+#sub-ctrl{display:flex;align-items:center;gap:12px;margin-top:11px;padding-top:11px;
   border-top:1px solid var(--border);flex-wrap:wrap}
 #sub-ctrl span{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted)}
 .sub-range{-webkit-appearance:none;height:3px;background:var(--surface2);border-radius:2px;outline:none;cursor:pointer}
 .sub-range::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;background:var(--accent);border-radius:50%}
 
-/* ── status / debug / tip ── */
 #status-bar{width:100%;max-width:960px;margin-top:8px;font-size:12px;
   font-family:'DM Mono',monospace;color:var(--muted);min-height:16px;text-align:center}
-#status-bar.err{color:var(--danger)} #status-bar.ok{color:var(--success)} #status-bar.warn{color:var(--warn)}
 #debug-panel{width:100%;max-width:960px;margin-top:6px;background:var(--surface);
   border:1px solid var(--border);border-radius:var(--radius);padding:9px 13px;
   display:none;max-height:140px;overflow-y:auto}
 #debug-panel p{font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);line-height:1.7;margin:0}
-#debug-panel p.w{color:var(--warn)} #debug-panel p.e{color:var(--danger)} #debug-panel p.s{color:var(--success)}
 #tip{margin-top:16px;max-width:960px;width:100%;background:rgba(200,169,110,.05);
   border:1px solid rgba(200,169,110,.14);border-radius:var(--radius);
   padding:12px 16px;font-size:12px;line-height:1.9;color:rgba(240,240,240,.48)}
@@ -182,6 +175,10 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 .sp{display:inline-block;width:12px;height:12px;border:2px solid var(--border2);
   border-top-color:var(--accent);border-radius:50%;animation:spin .65s linear infinite;vertical-align:middle;margin-right:5px}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Safari 내장 자막 완전 비활성화 */
+video::-webkit-media-text-track-container { display: none !important; }
+video::cue { display: none !important; }
 </style>
 </head>
 <body>
@@ -191,26 +188,20 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
   <span style="font-size:16px;flex-shrink:0">💡</span>
   <div>
     <b>몰입형 번역 등 확장프로그램</b> — 로컬 <code>file://</code>에서는 차단됩니다.
-    GitHub Pages에 올리거나, 터미널에서 <code>cd ~/Downloads && python3 -m http.server 8765</code>
-    실행 후 <code>http://localhost:8765/subtitle-player.html</code> 접속하세요.
+    GitHub Pages에 올리거나, 터미널에서 <code>python3 -m http.server 8765</code> 실행 후 접속하세요.
   </div>
   <button class="bclose" onclick="this.parentElement.style.display='none'">×</button>
 </div>
 
-<div id="codec-banner" class="banner">
-  <div style="width:100%">
-    <div class="ctitle" id="codec-title">⚠️ 재생 불가 코덱</div>
-    <div class="csub" id="codec-detail"></div>
-  </div>
-  <button class="bclose" onclick="document.getElementById('codec-banner').style.display='none'">×</button>
-</div>
+<div id="browser-banner" class="banner"></div>
+<div id="codec-banner" class="banner"><div style="width:100%"><div class="ctitle" id="codec-title">⚠️ 재생 불가 코덱</div><div class="csub" id="codec-detail"></div></div><button class="bclose" onclick="document.getElementById('codec-banner').style.display='none'">×</button></div>
 
 <div id="drop-row">
   <div id="dropzone">
     <input type="file" id="file-input" accept=".mkv,.mp4,.webm,.mov,.avi">
     <div class="dz-icon">▶</div>
     <p><strong>MKV / MP4 / WebM</strong> 파일 드래그 또는 클릭<br>
-    <span style="font-size:11px;opacity:.5">내장 자막 자동 추출 · 다중 트랙 선택</span></p>
+    <span style="font-size:11px;opacity:.5" id="format-hint"></span></p>
   </div>
   <div id="ext-sub-zone">
     <input type="file" id="ext-sub-input" accept=".srt,.ass,.ssa,.vtt">
@@ -225,11 +216,11 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 <div id="player-wrap">
   <div id="resize-bar">
     <span class="rl">크기</span>
-    <button class="sz-btn" data-w="480"  data-h="300">소</button>
+    <button class="sz-btn" data-w="480" data-h="300">소</button>
     <button class="sz-btn active" data-w="100%" data-h="460">중</button>
     <button class="sz-btn" data-w="100%" data-h="600">대</button>
     <button class="sz-btn" data-w="100%" data-h="780">특대</button>
-    <span class="rl" style="opacity:.55">· 우하단 모서리 드래그로 자유 조절</span>
+    <span class="rl">· 우하단 모서리 드래그</span>
   </div>
 
   <div id="video-container">
@@ -239,24 +230,21 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
   </div>
 
   <div id="controls">
-    <div id="progress-wrap">
-      <div id="progress-bar"></div>
-      <div id="progress-handle"></div>
-    </div>
+    <div id="progress-wrap"><div id="progress-bar"></div><div id="progress-handle"></div></div>
     <div id="ctrl-row">
       <button class="ctrl-btn" id="btn-play">▶</button>
-      <button class="ctrl-btn" id="btn-back" style="font-size:12px">«10</button>
-      <button class="ctrl-btn" id="btn-fwd"  style="font-size:12px">10»</button>
+      <button class="ctrl-btn" id="btn-back">«10</button>
+      <button class="ctrl-btn" id="btn-fwd">10»</button>
       <span id="time-display">0:00 / 0:00</span>
       <div class="spacer"></div>
       <div id="vol-wrap">
         <button class="ctrl-btn" id="btn-mute">🔊</button>
         <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1">
       </div>
-      <button class="ctrl-btn" id="btn-cc" title="자막 트랙">CC</button>
-      <button class="ctrl-btn" id="btn-pip" title="PiP (자막 포함)">⧉</button>
-      <button class="ctrl-btn" id="btn-fs"  title="전체화면 (F)">⛶</button>
-      <button class="ctrl-btn" id="btn-open" style="font-size:12px">파일</button>
+      <button class="ctrl-btn" id="btn-cc">CC</button>
+      <button class="ctrl-btn" id="btn-pip">⧉</button>
+      <button class="ctrl-btn" id="btn-fs">⛶</button>
+      <button class="ctrl-btn" id="btn-open">파일</button>
     </div>
   </div>
 </div>
@@ -278,54 +266,66 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-seri
 <div id="debug-panel"></div>
 
 <div id="tip">
-  <b>브라우저별 지원</b>: Chrome → MKV(H.264/VP9) ✓ · MP4(H.264) ✓ · MP4(H.265) ✗ &nbsp;|&nbsp; Safari → MP4(H.264/H.265) ✓ · MKV ✗<br>
-  <b>H.265 MP4</b>: Safari에서 여세요 (macOS/iOS 기본 지원) · Chrome에서는 VLC로 H.264 변환 필요<br>
-  <b>MKV (Safari)</b>: Safari는 MKV 컨테이너 미지원 → Chrome에서 여세요<br>
-  <b>PiP ⧉</b>: 재생 중에만 작동 · 자막이 영상에 합성되어 표시됩니다<br>
-  <b>F / 더블클릭</b> 전체화면 &nbsp;|&nbsp; <b>Space</b> 재생·정지 &nbsp;|&nbsp; <b>←/→</b> 5초 &nbsp;|&nbsp; <b>↑/↓</b> 볼륨
+  <b>Chrome 최적</b>: MKV + 내장 자막 + PiP 자막 포함 &nbsp;|&nbsp;
+  <b>Safari 최적</b>: MP4 + 내장 자막(JS 파싱) + PiP 지원<br>
+  <b>F / 더블클릭</b> 전체화면 | <b>Space</b> 재생·정지 | <b>←/→</b> 5초 | <b>↑/↓</b> 볼륨
 </div>
 
 <script>
 'use strict';
-/* ════════════════════════════════
-   STATE
-════════════════════════════════ */
-let subtitleTracks = [];
-let activeIdx      = -1;
-let currentBlobURL = null;
-let subFontSize    = 17;
-let subBottomPx    = 14;
-// PiP state
-let pipRafId       = null;
-let pipActive      = false;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isChrome = /chrome/i.test(navigator.userAgent) && !/edg/i.test(navigator.userAgent);
 
-const $  = id => document.getElementById(id);
-const videoEl     = $('video-el');
-const overlay     = $('sub-overlay');
-const pBar        = $('progress-bar');
-const pHandle     = $('progress-handle');
-const pWrap       = $('progress-wrap');
-const timeDsp     = $('time-display');
-const btnPlay     = $('btn-play');
-const btnCC       = $('btn-cc');
-const btnPip      = $('btn-pip');
-const btnFs       = $('btn-fs');
-const statusBar   = $('status-bar');
-const trackList   = $('track-list');
-const subPanel    = $('sub-panel');
-const playerWrap  = $('player-wrap');
-const dropzone    = $('dropzone');
-const fnBar       = $('fn-bar');
-const debugPanel  = $('debug-panel');
+let subtitleTracks = [];
+let activeIdx = -1;
+let currentBlobURL = null;
+let subFontSize = 17;
+let subBottomPx = 14;
+let pipRafId = null;
+let pipActive = false;
+let _pipVideoEl = null;
+
+const $ = id => document.getElementById(id);
+const videoEl = $('video-el');
+const overlay = $('sub-overlay');
+const pBar = $('progress-bar');
+const pHandle = $('progress-handle');
+const pWrap = $('progress-wrap');
+const timeDsp = $('time-display');
+const btnPlay = $('btn-play');
+const btnCC = $('btn-cc');
+const btnPip = $('btn-pip');
+const btnFs = $('btn-fs');
+const statusBar = $('status-bar');
+const trackList = $('track-list');
+const subPanel = $('sub-panel');
+const playerWrap = $('player-wrap');
+const dropzone = $('dropzone');
+const fnBar = $('fn-bar');
+const debugPanel = $('debug-panel');
 const videoContainer = $('video-container');
 const codecBanner = $('codec-banner');
 const codecDetail = $('codec-detail');
-const pipCanvas   = $('pip-canvas');
-const td8         = new TextDecoder('utf-8', { fatal: false });
+const pipCanvas = $('pip-canvas');
+const browserBanner = $('browser-banner');
+const formatHint = $('format-hint');
+const extSubZone = $('ext-sub-zone');
 
-/* ════════════════════════════════
-   DEBUG
-════════════════════════════════ */
+const td8 = new TextDecoder('utf-8', { fatal: false });
+
+function showBrowserBanner() {
+  if (isSafari) {
+    browserBanner.innerHTML = `<span>🍎</span><div><b>Safari 모드</b> — MP4 + 내장 자막 파싱<br>PiP 자막 지원</div><button class="bclose" onclick="this.parentElement.style.display='none'">×</button>`;
+    formatHint.textContent = 'Safari: MP4 내장 자막 · PiP 자막 포함';
+  } else if (isChrome) {
+    browserBanner.innerHTML = `<span>🌐</span><div><b>Chrome 모드</b> — MKV/MP4 + 내장 자막 파싱 · PiP 자막 합성</div><button class="bclose" onclick="this.parentElement.style.display='none'">×</button>`;
+    formatHint.textContent = 'Chrome: MKV/MP4 내장 자막 · PiP 자막 포함';
+  } else {
+    browserBanner.style.display = 'none';
+  }
+}
+showBrowserBanner();
+
 function dlog(msg, lv) {
   debugPanel.style.display = 'block';
   const p = document.createElement('p');
@@ -334,327 +334,17 @@ function dlog(msg, lv) {
   debugPanel.appendChild(p);
   debugPanel.scrollTop = debugPanel.scrollHeight;
 }
-
-/* ════════════════════════════════
-   RESIZE PRESETS
-════════════════════════════════ */
-document.querySelectorAll('.sz-btn[data-h]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.sz-btn[data-h]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    videoContainer.style.height = btn.dataset.h + 'px';
-    videoContainer.style.width  = btn.dataset.w !== '100%' ? btn.dataset.w + 'px' : '100%';
-  });
-});
-
-/* ════════════════════════════════
-   SUBTITLE CONTROLS
-════════════════════════════════ */
-$('sub-size-sl').addEventListener('input', function() {
-  subFontSize = +this.value;
-  $('sub-size-val').textContent = subFontSize + 'px';
-  document.querySelectorAll('.sub-line').forEach(el => el.style.fontSize = subFontSize + 'px');
-});
-$('sub-bot-sl').addEventListener('input', function() {
-  subBottomPx = +this.value;
-  $('sub-bot-val').textContent = subBottomPx + 'px';
-  overlay.style.bottom = subBottomPx + 'px';
-});
-
-/* ════════════════════════════════
-   FULLSCREEN
-════════════════════════════════ */
-function toggleFs() {
-  const el = videoContainer;
-  if (document.fullscreenElement || document.webkitFullscreenElement) {
-    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  } else {
-    (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
-  }
+function setStatus(html, cls) { statusBar.innerHTML = html; statusBar.className = cls || ''; }
+function fmt(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const h = Math.floor(s/3600), m = Math.floor(s%3600/60), sec = Math.floor(s%60);
+  return h ? h+':'+pad(m)+':'+pad(sec) : m+':'+pad(sec);
 }
-btnFs.addEventListener('click', toggleFs);
-videoContainer.addEventListener('dblclick', toggleFs);
-document.addEventListener('fullscreenchange',       () => { const on = !!document.fullscreenElement;            btnFs.textContent = on ? '✕' : '⛶'; btnFs.classList.toggle('on', on); });
-document.addEventListener('webkitfullscreenchange', () => { const on = !!document.webkitFullscreenElement;      btnFs.textContent = on ? '✕' : '⛶'; btnFs.classList.toggle('on', on); });
+function pad(n) { return String(n).padStart(2, '0'); }
 
-/* ════════════════════════════════
-   PiP — canvas composite approach
-   Strategy: draw videoEl frames + subtitle text onto a canvas,
-   stream the canvas to a NEW video element, then PiP that video.
-   Audio: keep original videoEl playing (user hears it normally).
-   The key fix: the new pipVideo must be appended to DOM and
-   play() must succeed before requestPictureInPicture.
-════════════════════════════════ */
-btnPip.addEventListener('click', togglePip);
-
-// Track the pip video element so we can clean it up
-let _pipVideoEl = null;
-
-async function togglePip() {
-  // ── Exit PiP ──
-  if (document.pictureInPictureElement) {
-    await document.exitPictureInPicture().catch(() => {});
-    return;
-  }
-
-  if (!document.pictureInPictureEnabled) {
-    setStatus('이 브라우저는 PiP를 지원하지 않습니다', 'warn');
-    return;
-  }
-  if (!videoEl.src) {
-    setStatus('먼저 비디오 파일을 여세요', 'warn');
-    return;
-  }
-
-  // ── Detect canvas.captureStream support (Safari = false) ──
-  const canvasStreamSupported = typeof pipCanvas.captureStream === 'function';
-
-  // If no subtitle OR Safari (no captureStream) → plain videoEl PiP
-  if (!canvasStreamSupported || activeIdx < 0 || activeIdx >= subtitleTracks.length) {
-    try {
-      await videoEl.requestPictureInPicture();
-      btnPip.classList.add('on');
-      if (!canvasStreamSupported && activeIdx >= 0) {
-        setStatus('Safari PiP: 자막 합성 미지원 — 자막 없이 재생', 'warn');
-      }
-      videoEl.addEventListener('leavepictureinpicture', () => btnPip.classList.remove('on'), { once: true });
-    } catch(e) {
-      dlog('PiP 오류: ' + e.message, 'e');
-      setStatus('PiP 실패: ' + e.message, 'err');
-    }
-    return;
-  }
-
-  // ── Canvas PiP with subtitle composite (Chrome) ──
-  const vw = videoEl.videoWidth  || 1280;
-  const vh = videoEl.videoHeight || 720;
-  pipCanvas.width  = vw;
-  pipCanvas.height = vh;
-  pipCanvas.style.display = 'block';
-
-  const ctx = pipCanvas.getContext('2d');
-  ctx.drawImage(videoEl, 0, 0, vw, vh); // first frame immediately
-
-  let stream;
-  try {
-    stream = pipCanvas.captureStream(30);
-  } catch(e) {
-    dlog('captureStream 실패: ' + e.message, 'e');
-    pipCanvas.style.display = 'none';
-    // fallback to plain PiP
-    try {
-      await videoEl.requestPictureInPicture();
-      btnPip.classList.add('on');
-      setStatus('PiP: 자막 없이 재생 (스트림 생성 실패)', 'warn');
-      videoEl.addEventListener('leavepictureinpicture', () => btnPip.classList.remove('on'), { once: true });
-    } catch(e2) { setStatus('PiP 실패: ' + e2.message, 'err'); }
-    return;
-  }
-
-  // Hidden video element driven by canvas stream (muted — audio from original videoEl)
-  const pv = document.createElement('video');
-  pv.srcObject = stream;
-  pv.muted = true;
-  pv.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0.01;top:0;left:0;pointer-events:none';
-  document.body.appendChild(pv);
-  _pipVideoEl = pv;
-
-  try {
-    await pv.play();
-  } catch(e) {
-    dlog('pipVideo.play 실패: ' + e.message, 'e');
-    pv.remove(); _pipVideoEl = null;
-    pipCanvas.style.display = 'none';
-    setStatus('PiP 시작 실패: ' + e.message, 'err');
-    return;
-  }
-
-  // Draw loop
-  pipActive = true;
-  function drawLoop() {
-    if (!pipActive) return;
-    ctx.drawImage(videoEl, 0, 0, vw, vh);
-    drawSubOnCanvas(ctx, vw, vh);
-    pipRafId = requestAnimationFrame(drawLoop);
-  }
-  drawLoop();
-
-  try {
-    await pv.requestPictureInPicture();
-    btnPip.classList.add('on');
-    pv.addEventListener('leavepictureinpicture', stopPip, { once: true });
-    dlog('PiP 시작 (canvas 합성 ' + vw + '×' + vh + ')', 's');
-  } catch(e) {
-    dlog('PiP 진입 실패: ' + e.message, 'e');
-    stopPip();
-    // final fallback
-    try {
-      await videoEl.requestPictureInPicture();
-      btnPip.classList.add('on');
-      setStatus('PiP: 자막 없이 재생 (canvas PiP 실패)', 'warn');
-      videoEl.addEventListener('leavepictureinpicture', () => btnPip.classList.remove('on'), { once: true });
-    } catch(e2) {
-      setStatus('PiP를 시작할 수 없습니다: ' + e2.message, 'err');
-    }
-  }
-}
-
-function stopPip() {
-  pipActive = false;
-  cancelAnimationFrame(pipRafId);
-  pipRafId = null;
-  if (_pipVideoEl) { _pipVideoEl.remove(); _pipVideoEl = null; }
-  pipCanvas.style.display = 'none';
-  btnPip.classList.remove('on');
-}
-
-function drawSubOnCanvas(ctx, vw, vh) {
-  if (activeIdx < 0 || activeIdx >= subtitleTracks.length) return;
-  const t    = videoEl.currentTime;
-  const cues = subtitleTracks[activeIdx].cues.filter(c => c.start <= t && c.end > t);
-  if (!cues.length) return;
-
-  const lines = cues.map(c => c.text).join('\n').split('\n').filter(l => l.trim());
-  const fs    = Math.max(18, Math.round(vh * 0.048));
-  ctx.font         = `bold ${fs}px "Noto Sans KR", Arial, sans-serif`;
-  ctx.textAlign    = 'center';
-  ctx.textBaseline = 'alphabetic';
-
-  const lineH = Math.round(fs * 1.45);
-  const padX  = Math.round(fs * 0.55);
-  const padY  = Math.round(fs * 0.25);
-  const baseY = vh - Math.round(vh * 0.055);
-
-  lines.forEach((line, i) => {
-    const y   = baseY - (lines.length - 1 - i) * lineH;
-    const tw  = ctx.measureText(line).width;
-    const bx  = vw / 2 - tw / 2 - padX;
-    const bw  = tw + padX * 2;
-    const bh  = lineH;
-    const by  = y - fs - padY + 2;
-
-    // background rect
-    ctx.fillStyle = 'rgba(0,0,0,0.80)';
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, 4);
-    else               ctx.rect(bx, by, bw, bh);
-    ctx.fill();
-
-    // text
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(line, vw / 2, y);
-  });
-}
-
-/* ════════════════════════════════
-   FILE INPUT
-════════════════════════════════ */
-$('file-input').addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
-$('btn-open').addEventListener('click', () => $('file-input').click());
-dropzone.addEventListener('dragover',  e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-dropzone.addEventListener('drop', e => {
-  e.preventDefault(); dropzone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-});
-
-/* ── External subtitle ── */
-const extSubZone = $('ext-sub-zone');
-$('ext-sub-input').addEventListener('change', e => { if (e.target.files[0]) handleExtSub(e.target.files[0]); });
-extSubZone.addEventListener('dragover',  e => { e.preventDefault(); extSubZone.classList.add('drag-over'); });
-extSubZone.addEventListener('dragleave', () => extSubZone.classList.remove('drag-over'));
-extSubZone.addEventListener('drop', e => {
-  e.preventDefault(); extSubZone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) handleExtSub(e.dataTransfer.files[0]);
-});
-
-async function handleExtSub(file) {
-  const ext = file.name.split('.').pop().toLowerCase();
-  try {
-    const text = await file.text();
-    let cues = [];
-    if      (ext === 'srt')              cues = parseSRT(text);
-    else if (ext === 'ass' || ext === 'ssa') cues = parseASS(text);
-    else if (ext === 'vtt')              cues = parseVTT(text);
-    else { dlog('지원 안 되는 형식: ' + ext, 'w'); return; }
-    dlog('외부 자막 "' + file.name + '" → ' + cues.length + '개', 's');
-    subtitleTracks.push({ id: 9000 + subtitleTracks.length, name: '📄 ' + file.name, lang: '', codec: ext.toUpperCase(), cues });
-    extSubZone.classList.add('has-file');
-    const en = $('esz-name'); en.style.display = 'block'; en.textContent = file.name;
-    renderTrackPanel();
-    selectTrack(subtitleTracks.length - 1);
-  } catch(e) { dlog('외부 자막 오류: ' + e.message, 'e'); }
-}
-
-/* ── Main file handler ── */
-async function handleFile(file) {
-  // Stop any PiP
-  if (document.pictureInPictureElement) await document.exitPictureInPicture().catch(() => {});
-  stopPip();
-
-  subtitleTracks = [];
-  activeIdx = -1;
-  overlay.innerHTML = ''; overlay.dataset.lt = '';
-  trackList.innerHTML = '';
-  subPanel.classList.remove('show');
-  debugPanel.innerHTML = ''; debugPanel.style.display = 'none';
-  codecBanner.style.display = 'none';
-
-  if (currentBlobURL) { URL.revokeObjectURL(currentBlobURL); currentBlobURL = null; }
-
-  setStatus('<span class="sp"></span>분석 중…');
-  fnBar.style.display = 'block';
-  fnBar.textContent = '▸ ' + file.name;
-
-  dropzone.style.display = 'none';
-  playerWrap.style.display = 'flex';
-
-  currentBlobURL = URL.createObjectURL(file);
-  videoEl.src = currentBlobURL;
-  videoEl.load();
-
-  const ext = file.name.split('.').pop().toLowerCase();
-  try {
-    if      (ext === 'mkv' || ext === 'webm') await parseMKV(file);
-    else if (ext === 'mp4' || ext === 'mov')  await parseMP4(file);
-  } catch(e) { dlog('파싱 예외: ' + e.message, 'e'); }
-
-  renderTrackPanel();
-}
-
-/* ── Codec error detection ── */
-videoEl.addEventListener('error', () => {
-  const code = videoEl.error ? videoEl.error.code : 0;
-  const msg  = videoEl.error ? videoEl.error.message : '';
-  dlog('비디오 에러 code=' + code + ' ' + msg.slice(0, 100), 'e');
-
-  if (code === 3 || code === 4) {
-    const fn = (fnBar.textContent || '').toLowerCase();
-    let codec = 'H.265(HEVC) 등 지원하지 않는 코덱';
-    if      (fn.includes('hevc') || fn.includes('h265') || fn.includes('x265')) codec = 'H.265 / HEVC';
-    else if (fn.includes('av1'))  codec = 'AV1';
-    else if (fn.includes('.mkv')) codec = 'MKV 컨테이너 (Safari 미지원)';
-
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    const isMKV    = fn.includes('.mkv');
-
-    codecDetail.innerHTML = isMKV && isSafari
-      ? 'Safari는 MKV 컨테이너를 지원하지 않습니다.<br>같은 파일을 <b>Chrome</b>에서 열어주세요.'
-      : '감지된 코덱: <strong style="color:var(--accent2)">' + codec + '</strong><br>' +
-        '• <b>H.265 MP4</b>는 <b>Safari</b>(macOS/iOS)에서 재생 가능<br>' +
-        '• <b>Chrome</b>에서는 VLC → 미디어 → 변환/저장 → <code>H.264+AAC (MP4)</code> 변환 후 사용<br>' +
-        '• 변환 후 이 플레이어에 드래그, 자막은 오른쪽에 .srt 드래그';
-
-    codecBanner.style.display = 'flex';
-    setStatus('재생 불가 — 위 안내 참고', 'err');
-  }
-});
-
-/* ════════════════════════════════
-   EXTERNAL SUBTITLE PARSERS
-════════════════════════════════ */
+// ==================== SRT/ASS/VTT PARSER ====================
 function parseSRT(text) {
-  const cues   = [];
+  const cues = [];
   const blocks = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split(/\n\n+/);
   for (const block of blocks) {
     const lines = block.trim().split('\n');
@@ -672,13 +362,12 @@ function srtTime(s) {
   const m = s.replace(',', '.').match(/(\d+):(\d+):(\d+)\.(\d+)/);
   return m ? +m[1]*3600 + +m[2]*60 + +m[3] + +m[4]/1000 : 0;
 }
-
 function parseASS(text) {
   const cues = [], lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
   let inEvents = false, fmt = [];
   for (const line of lines) {
-    if (line.trim().toLowerCase() === '[events]')    { inEvents = true;  continue; }
-    if (line.startsWith('[') && inEvents)             { inEvents = false; continue; }
+    if (line.trim().toLowerCase() === '[events]') { inEvents = true; continue; }
+    if (line.startsWith('[') && inEvents) { inEvents = false; continue; }
     if (!inEvents) continue;
     if (line.startsWith('Format:')) {
       fmt = line.replace('Format:', '').split(',').map(s => s.trim().toLowerCase());
@@ -686,12 +375,12 @@ function parseASS(text) {
     }
     if (!line.startsWith('Dialogue:')) continue;
     const vals = line.replace('Dialogue:', '').split(',');
-    const gi   = name => { const i = fmt.indexOf(name); return i >= 0 ? (vals[i]||'').trim() : ''; };
-    const ti   = fmt.indexOf('text');
-    const raw  = ti >= 0 ? vals.slice(ti).join(',').trim() : '';
-    const txt  = raw.replace(/\{[^}]*\}/g,'').replace(/\\N/gi,'\n').replace(/\\n/gi,'\n').trim();
-    const s1   = gi('start') || (vals[1]||'').trim();
-    const s2   = gi('end')   || (vals[2]||'').trim();
+    const gi = name => { const i = fmt.indexOf(name); return i >= 0 ? (vals[i]||'').trim() : ''; };
+    const ti = fmt.indexOf('text');
+    const raw = ti >= 0 ? vals.slice(ti).join(',').trim() : '';
+    const txt = raw.replace(/\{[^}]*\}/g,'').replace(/\\N/gi,'\n').replace(/\\n/gi,'\n').trim();
+    const s1 = gi('start') || (vals[1]||'').trim();
+    const s2 = gi('end') || (vals[2]||'').trim();
     if (txt) cues.push({ start: assTime(s1), end: assTime(s2), text: txt });
   }
   return cues.sort((a, b) => a.start - b.start);
@@ -701,10 +390,9 @@ function assTime(s) {
   const m = s.trim().match(/(\d+):(\d{2}):(\d{2})\.(\d{2})/);
   return m ? +m[1]*3600 + +m[2]*60 + +m[3] + +m[4]/100 : 0;
 }
-
 function parseVTT(text) {
   const cleaned = text.replace(/^WEBVTT.*\n/, '').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  const blocks  = cleaned.trim().split(/\n\n+/), cues = [];
+  const blocks = cleaned.trim().split(/\n\n+/), cues = [];
   for (const block of blocks) {
     const lines = block.trim().split('\n');
     let ti = 0;
@@ -722,13 +410,10 @@ function vttTime(s) {
   return p.length === 3 ? p[0]*3600+p[1]*60+p[2] : p.length === 2 ? p[0]*60+p[1] : p[0];
 }
 
-/* ════════════════════════════════
-   EBML / MKV PARSER
-════════════════════════════════ */
+// ==================== MKV PARSER ====================
 const UNKNOWN_SZ = 0x00FFFFFFFFFFFFFF;
-
 function readVINT(b, o) {
-  if (o >= b.length) throw new RangeError('v@' + o);
+  if (o >= b.length) throw new RangeError();
   const b0 = b[o];
   if (b0 === 0) return { v: UNKNOWN_SZ, len: 8 };
   let w = 1, mask = 0x80;
@@ -738,7 +423,6 @@ function readVINT(b, o) {
   return { v, len: w };
 }
 function readID(b, o) {
-  if (o >= b.length) throw new RangeError('id@' + o);
   const b0 = b[o];
   let w = (b0 & 0x80) ? 1 : (b0 & 0x40) ? 2 : (b0 & 0x20) ? 3 : 4;
   let id = 0;
@@ -746,9 +430,8 @@ function readID(b, o) {
   return { id: id >>> 0, len: w };
 }
 function readUInt(b, o, sz) { let v = 0; for (let i = 0; i < sz; i++) v = v*256 + b[o+i]; return v; }
-function readI16(b, o)      { let v = (b[o]<<8)|b[o+1]; return v & 0x8000 ? v - 0x10000 : v; }
-function readStr(b, o, sz)  { return String.fromCharCode(...b.slice(o, o+sz)).replace(/\0/g,''); }
-
+function readI16(b, o) { let v = (b[o]<<8)|b[o+1]; return v & 0x8000 ? v - 0x10000 : v; }
+function readStr(b, o, sz) { return String.fromCharCode(...b.slice(o, o+sz)).replace(/\0/g,''); }
 function iterEB(b, start, end, cb) {
   let pos = start;
   while (pos < end - 1 && pos < b.length - 1) {
@@ -760,7 +443,6 @@ function iterEB(b, start, end, cb) {
     pos += hdr + sz;
   }
 }
-
 const MKV = {
   Segment:0x18538067, Info:0x1549A966, TSScale:0x2AD7B1,
   Tracks:0x1654AE6B, TrackEntry:0xAE, TrackNumber:0xD7, TrackType:0x83,
@@ -768,163 +450,116 @@ const MKV = {
   Cluster:0x1F43B675, Timestamp:0xE7,
   BlockGroup:0xA0, Block:0xA1, BlockDuration:0x9B, SimpleBlock:0xA3,
 };
-
 async function parseMKV(file) {
   setStatus('<span class="sp"></span>MKV 자막 파싱 중…');
   const buf = new Uint8Array(await file.arrayBuffer());
-  dlog('MKV: ' + (buf.length/1024/1024).toFixed(1) + ' MB');
-
-  // Find Segment
   let segS = -1, segSz = 0;
-  { let p = 0;
-    while (p < Math.min(buf.length, 512)) {
-      try {
-        const idI = readID(buf, p), szI = readVINT(buf, p + idI.len);
-        if (idI.id === MKV.Segment) {
-          segS  = p + idI.len + szI.len;
-          segSz = szI.v >= UNKNOWN_SZ ? buf.length - segS : Math.min(szI.v, buf.length - segS);
-          break;
-        }
-        if (szI.v >= UNKNOWN_SZ) { p += idI.len + szI.len; continue; }
-        p += idI.len + szI.len + szI.v;
-      } catch(e) { p++; }
-    }
-    if (segS < 0) { dlog('Segment 없음', 'e'); return; }
-    dlog('Segment @' + segS);
+  let p = 0;
+  while (p < Math.min(buf.length, 512)) {
+    try {
+      const idI = readID(buf, p), szI = readVINT(buf, p + idI.len);
+      if (idI.id === MKV.Segment) {
+        segS = p + idI.len + szI.len;
+        segSz = szI.v >= UNKNOWN_SZ ? buf.length - segS : Math.min(szI.v, buf.length - segS);
+        break;
+      }
+      if (szI.v >= UNKNOWN_SZ) { p += idI.len + szI.len; continue; }
+      p += idI.len + szI.len + szI.v;
+    } catch(e) { p++; }
   }
-
+  if (segS < 0) return;
   let timescale = 1000000;
   const rawTracks = [];
   const segEnd = segS + segSz;
-
-  // Scan Info + Tracks (stop at first Cluster)
-  { let p = segS;
-    while (p < segEnd - 2 && p < buf.length - 2) {
-      let idI, szI;
-      try { idI = readID(buf, p); szI = readVINT(buf, p + idI.len); } catch(e) { p++; continue; }
-      const hdr = idI.len + szI.len;
-      const sz  = szI.v >= UNKNOWN_SZ ? segEnd - p - hdr : Math.min(szI.v, segEnd - p - hdr);
-      const ds  = p + hdr;
-      if (idI.id === MKV.Cluster) break;
-
-      if (idI.id === MKV.Info) {
-        iterEB(buf, ds, ds + sz, (id, o, esz) => {
-          if (id === MKV.TSScale) timescale = readUInt(buf, o, esz);
-        });
-        dlog('TimestampScale=' + timescale);
-      }
-
-      if (idI.id === MKV.Tracks) {
-        iterEB(buf, ds, ds + sz, (id, o, esz) => {
-          if (id !== MKV.TrackEntry) return;
-          const t = { num:0, type:0, codec:'', lang:'', name:'' };
-          iterEB(buf, o, o + esz, (cid, co, csz) => {
-            if      (cid === MKV.TrackNumber) t.num   = readUInt(buf, co, csz);
-            else if (cid === MKV.TrackType)   t.type  = readUInt(buf, co, csz);
-            else if (cid === MKV.CodecID)     t.codec = readStr(buf, co, csz);
-            else if (cid === MKV.Language)    t.lang  = readStr(buf, co, csz);
-            else if (cid === MKV.LangBCP47)   t.lang  = readStr(buf, co, csz);
-            else if (cid === MKV.TrackName)   t.name  = td8.decode(buf.slice(co, co + csz));
-          });
-          rawTracks.push(t);
-        });
-        dlog('트랙 ' + rawTracks.length + '개: ' + rawTracks.map(t=>'#'+t.num+' type='+t.type+' '+t.codec).join(', '));
-      }
-
-      if (sz <= 0) { p++; continue; }
-      p += hdr + sz;
-    }
-  }
-
-  const subTracks = rawTracks.filter(t => t.type === 17);
-  if (!subTracks.length) { dlog('자막 트랙 없음 (type=17)', 'w'); return; }
-  dlog('자막 트랙 ' + subTracks.length + '개', 's');
-
-  const cueMap = {};
-  subTracks.forEach(t => { cueMap[t.num] = []; });
-  const msPT = timescale / 1000000;
-
-  // Scan all Clusters
-  let p = segS, clCnt = 0;
-  while (p < segEnd - 4 && p < buf.length - 4) {
+  p = segS;
+  while (p < segEnd - 2) {
     let idI, szI;
     try { idI = readID(buf, p); szI = readVINT(buf, p + idI.len); } catch(e) { p++; continue; }
     const hdr = idI.len + szI.len;
-    const sz  = szI.v >= UNKNOWN_SZ ? segEnd - p - hdr : Math.min(szI.v, segEnd - p - hdr);
-    const ds  = p + hdr;
-
+    const sz = szI.v >= UNKNOWN_SZ ? segEnd - p - hdr : Math.min(szI.v, segEnd - p - hdr);
+    const ds = p + hdr;
+    if (idI.id === MKV.Cluster) break;
+    if (idI.id === MKV.Info) iterEB(buf, ds, ds + sz, (id, o, esz) => { if (id === MKV.TSScale) timescale = readUInt(buf, o, esz); });
+    if (idI.id === MKV.Tracks) {
+      iterEB(buf, ds, ds + sz, (id, o, esz) => {
+        if (id !== MKV.TrackEntry) return;
+        const t = { num:0, type:0, codec:'', lang:'', name:'' };
+        iterEB(buf, o, o + esz, (cid, co, csz) => {
+          if (cid === MKV.TrackNumber) t.num = readUInt(buf, co, csz);
+          else if (cid === MKV.TrackType) t.type = readUInt(buf, co, csz);
+          else if (cid === MKV.CodecID) t.codec = readStr(buf, co, csz);
+          else if (cid === MKV.Language || cid === MKV.LangBCP47) t.lang = readStr(buf, co, csz);
+          else if (cid === MKV.TrackName) t.name = td8.decode(buf.slice(co, co + csz));
+        });
+        rawTracks.push(t);
+      });
+    }
+    if (sz <= 0) { p++; continue; }
+    p += hdr + sz;
+  }
+  const subTracks = rawTracks.filter(t => t.type === 17);
+  if (!subTracks.length) return;
+  const cueMap = {};
+  subTracks.forEach(t => { cueMap[t.num] = []; });
+  const msPT = timescale / 1000000;
+  p = segS;
+  while (p < segEnd - 4) {
+    let idI, szI;
+    try { idI = readID(buf, p); szI = readVINT(buf, p + idI.len); } catch(e) { p++; continue; }
+    const hdr = idI.len + szI.len;
+    const sz = szI.v >= UNKNOWN_SZ ? segEnd - p - hdr : Math.min(szI.v, segEnd - p - hdr);
+    const ds = p + hdr;
     if (idI.id !== MKV.Cluster) { p += hdr + sz; if (sz <= 0) p++; continue; }
-
-    clCnt++;
     let clTS = 0;
     iterEB(buf, ds, ds + sz, (id, o, esz) => { if (id === MKV.Timestamp) clTS = readUInt(buf, o, esz); });
     iterEB(buf, ds, ds + sz, (id, o, esz) => {
-      if      (id === MKV.SimpleBlock) mkvSB(buf, o, esz, clTS, msPT, cueMap);
-      else if (id === MKV.BlockGroup)  {
+      if (id === MKV.SimpleBlock) {
+        try {
+          const vi = readVINT(buf, o), tn = vi.v;
+          if (cueMap[tn]) {
+            const relTS = readI16(buf, o + vi.len);
+            const sMS = (clTS + relTS) * msPT;
+            const dO = o + vi.len + 3, dS = esz - vi.len - 3;
+            if (dS > 0) {
+              let t = td8.decode(buf.slice(dO, dO + dS));
+              t = t.replace(/\{[^}]*\}/g, '').replace(/<[^>]+>/g, '').replace(/\\N/gi, '\n').trim();
+              if (t) cueMap[tn].push({ start: sMS/1000, end: sMS/1000 + 4, text: t });
+            }
+          }
+        } catch(e) {}
+      } else if (id === MKV.BlockGroup) {
         let bO = -1, bS = 0, dur = 0;
         iterEB(buf, o, o + esz, (bid, bo, bsz) => {
-          if      (bid === MKV.Block)         { bO = bo; bS = bsz; }
-          else if (bid === MKV.BlockDuration)   dur = readUInt(buf, bo, bsz);
+          if (bid === MKV.Block) { bO = bo; bS = bsz; }
+          else if (bid === MKV.BlockDuration) dur = readUInt(buf, bo, bsz);
         });
-        if (bO >= 0) mkvBG(buf, bO, bS, dur, clTS, msPT, cueMap);
+        if (bO >= 0) {
+          try {
+            const vi = readVINT(buf, bO), tn = vi.v;
+            if (cueMap[tn]) {
+              const relTS = readI16(buf, bO + vi.len);
+              const sMS = (clTS + relTS) * msPT;
+              const eMS = dur > 0 ? sMS + dur * msPT : sMS + 4000;
+              const dO = bO + vi.len + 3, dS = bS - vi.len - 3;
+              if (dS > 0) {
+                let t = td8.decode(buf.slice(dO, dO + dS));
+                t = t.replace(/\{[^}]*\}/g, '').replace(/<[^>]+>/g, '').replace(/\\N/gi, '\n').trim();
+                if (t) cueMap[tn].push({ start: sMS/1000, end: eMS/1000, text: t });
+              }
+            }
+          } catch(e) {}
+        }
       }
     });
     p += hdr + sz; if (sz <= 0) p++;
   }
-  dlog('Cluster ' + clCnt + '개 처리');
-
   subTracks.forEach(t => {
     const cues = (cueMap[t.num] || []).sort((a, b) => a.start - b.start);
-    dlog('#' + t.num + ' "' + (t.name||t.lang||'?') + '" ' + t.codec + ' → ' + cues.length + '개', cues.length > 0 ? 's' : 'w');
-    subtitleTracks.push({ id: t.num, name: t.name||'', lang: t.lang||'', codec: t.codec, cues });
+    if (cues.length) subtitleTracks.push({ id: t.num, name: t.name||t.lang||'자막', lang: t.lang, codec: t.codec, cues });
   });
 }
 
-function mkvSB(b, off, sz, clTS, msPT, map) {
-  try {
-    const vi = readVINT(b, off), tn = vi.v;
-    if (!map[tn]) return;
-    const relTS = readI16(b, off + vi.len);
-    const sMS   = (clTS + relTS) * msPT;
-    const dO = off + vi.len + 3, dS = sz - vi.len - 3;
-    if (dS <= 0) return;
-    const text = mkvTxt(b, dO, dS);
-    if (text) map[tn].push({ start: sMS/1000, end: sMS/1000 + 4, text });
-  } catch(e) {}
-}
-function mkvBG(b, off, sz, dur, clTS, msPT, map) {
-  try {
-    const vi = readVINT(b, off), tn = vi.v;
-    if (!map[tn]) return;
-    const relTS = readI16(b, off + vi.len);
-    const sMS   = (clTS + relTS) * msPT;
-    const eMS   = dur > 0 ? sMS + dur * msPT : sMS + 4000;
-    const dO = off + vi.len + 3, dS = sz - vi.len - 3;
-    if (dS <= 0) return;
-    const text = mkvTxt(b, dO, dS);
-    if (text) map[tn].push({ start: sMS/1000, end: eMS/1000, text });
-  } catch(e) {}
-}
-function mkvTxt(b, off, sz) {
-  try {
-    let t = td8.decode(b.slice(off, off + sz));
-    if (t.includes('Dialogue:')) {
-      const parts = [];
-      for (const line of t.split('\n')) {
-        const m = line.match(/^Dialogue:[^,]*(?:,[^,]*){8},([\s\S]*)$/);
-        if (m) parts.push(m[1]);
-        else if (line.trim() && !line.startsWith('Dialogue:')) parts.push(line);
-      }
-      t = parts.join('\n');
-    }
-    t = t.replace(/\{[^}]*\}/g, '').replace(/<[^>]+>/g, '').replace(/\\N/gi, '\n').replace(/\r/g, '').trim();
-    return t || null;
-  } catch(e) { return null; }
-}
-
-/* ════════════════════════════════
-   MP4 PARSER
-════════════════════════════════ */
+// ==================== MP4 PARSER ====================
 function mp4U32(b,o){ return ((b[o]<<24)|(b[o+1]<<16)|(b[o+2]<<8)|b[o+3])>>>0; }
 function mp4U64(b,o){ return mp4U32(b,o)*4294967296 + mp4U32(b,o+4); }
 function mp4FCC(b,o){ return String.fromCharCode(b[o],b[o+1],b[o+2],b[o+3]); }
@@ -939,16 +574,12 @@ function mp4FindBox(b, start, end, type) {
   }
   return null;
 }
-
 async function parseMP4(file) {
   setStatus('<span class="sp"></span>MP4 자막 파싱 중…');
   const buf = new Uint8Array(await file.arrayBuffer());
-  dlog('MP4: ' + (buf.length/1024/1024).toFixed(1) + ' MB');
   const moov = mp4FindBox(buf, 0, buf.length, 'moov');
-  if (!moov) { dlog('moov 없음', 'e'); return; }
-  dlog('moov @' + moov.bs);
-
-  let trakP = moov.ds, tIdx = 0;
+  if (!moov) return;
+  let trakP = moov.ds;
   while (trakP < moov.ds + moov.sz) {
     const trak = mp4FindBox(buf, trakP, moov.ds + moov.sz, 'trak');
     if (!trak) break;
@@ -957,13 +588,52 @@ async function parseMP4(file) {
       const hdlr = mp4FindBox(buf, mdia.ds, mdia.ds + mdia.sz, 'hdlr');
       if (hdlr) {
         const ht = mp4FCC(buf, hdlr.ds + 8);
-        dlog('trak#' + (tIdx+1) + ' handler="' + ht + '"');
         if (ht === 'text' || ht === 'sbtl' || ht === 'subt') {
-          const cues = mp4Cues(buf, trak, mdia);
-          dlog('MP4 자막#' + (tIdx+1) + ' → ' + cues.length + '개', cues.length > 0 ? 's' : 'w');
-          if (cues.length > 0) {
-            subtitleTracks.push({ id:tIdx, name:'자막 '+(tIdx+1), lang:'', codec:'tx3g', cues });
-            tIdx++;
+          const mdhd = mp4FindBox(buf, mdia.ds, mdia.ds+mdia.sz, 'mdhd');
+          if (!mdhd) { trakP = trak.bs + trak.boxSz; continue; }
+          const ts = buf[mdhd.ds] === 1 ? mp4U32(buf, mdhd.ds+20) : mp4U32(buf, mdhd.ds+12);
+          const minf = mp4FindBox(buf, mdia.ds, mdia.ds+mdia.sz, 'minf');
+          const stbl = minf ? mp4FindBox(buf, minf.ds, minf.ds+minf.sz, 'stbl') : null;
+          const stts = stbl ? mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stts') : null;
+          const stsz = stbl ? mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stsz') : null;
+          const stsc = stbl ? mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stsc') : null;
+          const stco = stbl ? (mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stco') || mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'co64')) : null;
+          if (stts && stsz && stsc && stco && ts) {
+            const cues = [];
+            const defSz = mp4U32(buf, stsz.ds+4), nSamp = mp4U32(buf, stsz.ds+8);
+            const sizes = [];
+            for (let i = 0; i < nSamp; i++) sizes.push(defSz === 0 ? mp4U32(buf, stsz.ds+12+i*4) : defSz);
+            const isCo64 = mp4FCC(buf, stco.bs+4) === 'co64', nChunk = mp4U32(buf, stco.ds+4);
+            const chunkOff = [];
+            for (let i = 0; i < nChunk; i++) chunkOff.push(isCo64 ? mp4U64(buf, stco.ds+8+i*8) : mp4U32(buf, stco.ds+8+i*4));
+            const nSC = mp4U32(buf, stsc.ds+4), stscE = [];
+            for (let i = 0; i < nSC; i++) { const b2 = stsc.ds + 8 + i*12; stscE.push({ fc: mp4U32(buf, b2), spc: mp4U32(buf, b2+4) }); }
+            const sOff = new Array(nSamp).fill(0);
+            let si = 0;
+            for (let ei = 0; ei < stscE.length && si < nSamp; ei++) {
+              const cs = stscE[ei].fc - 1, ce = ei+1 < stscE.length ? stscE[ei+1].fc - 1 : nChunk;
+              for (let ci = cs; ci < ce && si < nSamp; ci++) {
+                let off = chunkOff[ci] || 0;
+                for (let s = 0; s < stscE[ei].spc && si < nSamp; s++, si++) { sOff[si] = off; off += sizes[si]||0; }
+              }
+            }
+            const nTTS = mp4U32(buf, stts.ds+4);
+            let tick = 0, sIdx = 0;
+            for (let i = 0; i < nTTS && sIdx < nSamp; i++) {
+              const base = stts.ds + 8 + i*8, count = mp4U32(buf, base), delta = mp4U32(buf, base+4);
+              for (let j = 0; j < count && sIdx < nSamp; j++, sIdx++) {
+                const startS = tick/ts, endS = (tick+delta)/ts, sz = sizes[sIdx], fo = sOff[sIdx];
+                if (sz >= 2 && fo > 0 && fo + sz <= buf.length) {
+                  const tlen = (buf[fo]<<8) | buf[fo+1];
+                  if (tlen > 0 && tlen <= sz - 2) {
+                    const txt = td8.decode(buf.slice(fo+2, fo+2+tlen)).trim();
+                    if (txt) cues.push({ start: startS, end: endS, text: txt });
+                  }
+                }
+                tick += delta;
+              }
+            }
+            if (cues.length) subtitleTracks.push({ id: subtitleTracks.length, name: 'MP4 자막', lang: '', codec: 'tx3g', cues });
           }
         }
       }
@@ -972,71 +642,59 @@ async function parseMP4(file) {
   }
 }
 
-function mp4Cues(buf, trak, mdia) {
-  const cues = [];
-  const mdhd = mp4FindBox(buf, mdia.ds, mdia.ds+mdia.sz, 'mdhd'); if (!mdhd) return cues;
-  const ts   = buf[mdhd.ds] === 1 ? mp4U32(buf, mdhd.ds+20) : mp4U32(buf, mdhd.ds+12);
-  if (!ts) return cues;
-  const minf = mp4FindBox(buf, mdia.ds, mdia.ds+mdia.sz, 'minf'); if (!minf) return cues;
-  const stbl = mp4FindBox(buf, minf.ds, minf.ds+minf.sz, 'stbl'); if (!stbl) return cues;
-  const stts = mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stts');
-  const stsz = mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stsz');
-  const stsc = mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stsc');
-  const stco = mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'stco')
-            || mp4FindBox(buf, stbl.ds, stbl.ds+stbl.sz, 'co64');
-  if (!stts||!stsz||!stsc||!stco) { dlog('stbl box 누락','w'); return cues; }
-
-  const defSz = mp4U32(buf, stsz.ds+4), nSamp = mp4U32(buf, stsz.ds+8);
-  const sizes = [];
-  for (let i = 0; i < nSamp; i++) sizes.push(defSz === 0 ? mp4U32(buf, stsz.ds+12+i*4) : defSz);
-
-  const isCo64 = mp4FCC(buf, stco.bs+4) === 'co64', nChunk = mp4U32(buf, stco.ds+4);
-  const chunkOff = [];
-  for (let i = 0; i < nChunk; i++) chunkOff.push(isCo64 ? mp4U64(buf, stco.ds+8+i*8) : mp4U32(buf, stco.ds+8+i*4));
-
-  const nSC = mp4U32(buf, stsc.ds+4), stscE = [];
-  for (let i = 0; i < nSC; i++) {
-    const b2 = stsc.ds + 8 + i*12;
-    stscE.push({ fc: mp4U32(buf, b2), spc: mp4U32(buf, b2+4) });
-  }
-
-  const sOff = new Array(nSamp).fill(0);
-  let si = 0;
-  for (let ei = 0; ei < stscE.length && si < nSamp; ei++) {
-    const cs = stscE[ei].fc - 1, ce = ei+1 < stscE.length ? stscE[ei+1].fc - 1 : nChunk;
-    for (let ci = cs; ci < ce && si < nSamp; ci++) {
-      let off = chunkOff[ci] || 0;
-      for (let s = 0; s < stscE[ei].spc && si < nSamp; s++, si++) { sOff[si] = off; off += sizes[si]||0; }
-    }
-  }
-
-  const nTTS = mp4U32(buf, stts.ds+4);
-  let tick = 0, sIdx = 0;
-  for (let i = 0; i < nTTS && sIdx < nSamp; i++) {
-    const base = stts.ds + 8 + i*8, count = mp4U32(buf, base), delta = mp4U32(buf, base+4);
-    for (let j = 0; j < count && sIdx < nSamp; j++, sIdx++) {
-      const startS = tick/ts, endS = (tick+delta)/ts, sz = sizes[sIdx], fo = sOff[sIdx];
-      if (sz >= 2 && fo > 0 && fo + sz <= buf.length) {
-        const tlen = (buf[fo]<<8) | buf[fo+1];
-        if (tlen > 0 && tlen <= sz - 2) {
-          const txt = td8.decode(buf.slice(fo+2, fo+2+tlen)).trim();
-          if (txt) cues.push({ start: startS, end: endS, text: txt });
-        }
-      }
-      tick += delta;
-    }
-  }
-  return cues;
+async function handleExtSub(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  try {
+    const text = await file.text();
+    let cues = [];
+    if (ext === 'srt') cues = parseSRT(text);
+    else if (ext === 'ass' || ext === 'ssa') cues = parseASS(text);
+    else if (ext === 'vtt') cues = parseVTT(text);
+    else { dlog('지원 안 됨: ' + ext, 'w'); return; }
+    subtitleTracks.push({ id: 9000 + subtitleTracks.length, name: '📄 ' + file.name, lang: '', codec: ext.toUpperCase(), cues });
+    extSubZone.classList.add('has-file');
+    const en = $('esz-name'); en.style.display = 'block'; en.textContent = file.name;
+    renderTrackPanel();
+    selectTrack(subtitleTracks.length - 1);
+  } catch(e) { dlog('외부 자막 오류: ' + e.message, 'e'); }
 }
 
-/* ════════════════════════════════
-   TRACK PANEL
-════════════════════════════════ */
+async function handleFile(file) {
+  if (document.pictureInPictureElement) await document.exitPictureInPicture().catch(()=>{});
+  stopPip();
+  subtitleTracks = [];
+  activeIdx = -1;
+  overlay.innerHTML = '';
+  trackList.innerHTML = '';
+  subPanel.classList.remove('show');
+  debugPanel.innerHTML = ''; debugPanel.style.display = 'none';
+  codecBanner.style.display = 'none';
+  if (currentBlobURL) { URL.revokeObjectURL(currentBlobURL); currentBlobURL = null; }
+  setStatus('<span class="sp"></span>분석 중…');
+  fnBar.style.display = 'block';
+  fnBar.textContent = '▸ ' + file.name;
+  dropzone.style.display = 'none';
+  playerWrap.style.display = 'flex';
+  currentBlobURL = URL.createObjectURL(file);
+  videoEl.src = currentBlobURL;
+  videoEl.load();
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'mkv' || ext === 'webm') {
+    if (!isSafari) {
+      try { await parseMKV(file); } catch(e) { dlog('MKV 파싱 예외: ' + e.message, 'e'); }
+      renderTrackPanel();
+    } else { setStatus('Safari는 MKV 미지원', 'err'); renderTrackPanel(); }
+  } else if (ext === 'mp4' || ext === 'mov') {
+    try { await parseMP4(file); } catch(e) { dlog('MP4 파싱 예외: ' + e.message, 'e'); }
+    renderTrackPanel();
+  }
+  if (subtitleTracks.length === 0) renderTrackPanel();
+}
+
 function renderTrackPanel() {
   trackList.innerHTML = '';
   subPanel.classList.add('show');
   btnCC.classList.add('on');
-
   if (!subtitleTracks.length) {
     const p = document.createElement('p');
     p.style.cssText = 'font-size:12px;color:var(--muted);font-family:"DM Mono",monospace';
@@ -1045,109 +703,277 @@ function renderTrackPanel() {
     setStatus('자막 트랙 없음', 'err');
     return;
   }
-
-  const offB = mkBtn('끄기', -1);
-  offB.style.opacity = '.5';
-  trackList.appendChild(offB);
-
+  const offBtn = mkBtn('끄기', -1);
+  offBtn.style.opacity = '.5';
+  trackList.appendChild(offBtn);
   subtitleTracks.forEach((t, i) => {
     const parts = [];
-    if (t.name)  parts.push(t.name);
-    if (t.lang)  parts.push('[' + t.lang + ']');
+    if (t.name) parts.push(t.name);
+    if (t.lang) parts.push('[' + t.lang + ']');
     if (t.codec) parts.push(t.codec.replace('S_TEXT/', ''));
     parts.push(t.cues.length + '개');
     trackList.appendChild(mkBtn(parts.join('  '), i));
   });
-
-  selectTrack(activeIdx >= 0 && activeIdx < subtitleTracks.length ? activeIdx : 0);
+  if (activeIdx >= 0 && activeIdx < subtitleTracks.length) selectTrack(activeIdx);
+  else if (subtitleTracks.length) selectTrack(0);
   setStatus('자막 트랙 ' + subtitleTracks.length + '개', 'ok');
 }
+
 function mkBtn(label, idx) {
   const b = document.createElement('button');
-  b.className = 'track-btn'; b.textContent = label; b.dataset.idx = idx;
+  b.className = 'track-btn';
+  b.textContent = label;
+  b.dataset.idx = idx;
   b.addEventListener('click', () => selectTrack(idx));
   return b;
 }
+
 function selectTrack(idx) {
   activeIdx = idx;
-  overlay.innerHTML = ''; overlay.dataset.lt = '';
+  overlay.innerHTML = '';
   document.querySelectorAll('.track-btn').forEach(b => b.classList.toggle('active', +b.dataset.idx === idx));
 }
 
-/* ════════════════════════════════
-   SUBTITLE RENDER (DOM overlay)
-════════════════════════════════ */
 function renderSubtitle() {
   if (activeIdx < 0 || activeIdx >= subtitleTracks.length) {
-    if (overlay.children.length) { overlay.innerHTML = ''; overlay.dataset.lt = ''; }
+    if (overlay.children.length) overlay.innerHTML = '';
     return;
   }
-  const t    = videoEl.currentTime;
+  const t = videoEl.currentTime;
   const cues = subtitleTracks[activeIdx].cues.filter(c => c.start <= t && c.end > t);
-  const txt  = cues.map(c => c.text).join('\n');
+  const txt = cues.map(c => c.text).join('\n');
   if (overlay.dataset.lt === txt) return;
   overlay.dataset.lt = txt;
-  overlay.innerHTML  = '';
+  overlay.innerHTML = '';
   if (!txt) return;
   txt.split('\n').forEach(line => {
     if (!line.trim()) return;
     const d = document.createElement('div');
-    d.className = 'sub-line'; d.style.fontSize = subFontSize + 'px'; d.textContent = line;
+    d.className = 'sub-line';
+    d.style.fontSize = subFontSize + 'px';
+    d.textContent = line;
     overlay.appendChild(d);
   });
 }
 
-/* ════════════════════════════════
-   VIDEO CONTROLS
-════════════════════════════════ */
+function drawSubOnCanvas(ctx, vw, vh) {
+  if (activeIdx < 0 || activeIdx >= subtitleTracks.length) return;
+  const t = videoEl.currentTime;
+  const cues = subtitleTracks[activeIdx].cues.filter(c => c.start <= t && c.end > t);
+  if (!cues.length) return;
+  const lines = cues.map(c => c.text).join('\n').split('\n').filter(l => l.trim());
+  const fs = Math.max(18, Math.round(vh * 0.048));
+  ctx.font = `bold ${fs}px "Noto Sans KR", Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  const lineH = Math.round(fs * 1.45);
+  const baseY = vh - Math.round(vh * 0.055);
+  lines.forEach((line, i) => {
+    const y = baseY - (lines.length - 1 - i) * lineH;
+    const tw = ctx.measureText(line).width;
+    const padX = Math.round(fs * 0.55);
+    const padY = Math.round(fs * 0.25);
+    const bx = vw / 2 - tw / 2 - padX;
+    const bw = tw + padX * 2;
+    const bh = lineH;
+    const by = y - fs - padY + 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.80)';
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(line, vw / 2, y);
+  });
+}
+
+function stopPip() {
+  pipActive = false;
+  if (pipRafId) cancelAnimationFrame(pipRafId);
+  pipRafId = null;
+  if (_pipVideoEl) { _pipVideoEl.remove(); _pipVideoEl = null; }
+  pipCanvas.style.display = 'none';
+  btnPip.classList.remove('on');
+  // PiP 종료 시 메인 자막 다시 표시
+  document.body.classList.remove('pip-active');
+}
+
+async function togglePip() {
+  if (!document.pictureInPictureEnabled) {
+    setStatus('PiP 미지원', 'warn');
+    return;
+  }
+  if (document.pictureInPictureElement) {
+    await document.exitPictureInPicture().catch(()=>{});
+    return;
+  }
+  if (!videoEl.src) {
+    setStatus('먼저 비디오 파일을 여세요', 'warn');
+    return;
+  }
+  
+  // PiP 시작 시 메인 자막 숨김 (이중 출력 방지)
+  document.body.classList.add('pip-active');
+  
+  if (isSafari) {
+    try {
+      await videoEl.requestPictureInPicture();
+      btnPip.classList.add('on');
+      videoEl.addEventListener('leavepictureinpicture', () => {
+        btnPip.classList.remove('on');
+        document.body.classList.remove('pip-active');
+      }, { once: true });
+    } catch(e) {
+      document.body.classList.remove('pip-active');
+      setStatus('PiP 실패: ' + e.message, 'err');
+    }
+    return;
+  }
+  
+  // Chrome canvas PiP
+  const vw = videoEl.videoWidth || 1280;
+  const vh = videoEl.videoHeight || 720;
+  pipCanvas.width = vw;
+  pipCanvas.height = vh;
+  pipCanvas.style.display = 'block';
+  const ctx = pipCanvas.getContext('2d');
+  ctx.drawImage(videoEl, 0, 0, vw, vh);
+  let stream;
+  try {
+    stream = pipCanvas.captureStream(30);
+  } catch(e) {
+    pipCanvas.style.display = 'none';
+    try {
+      await videoEl.requestPictureInPicture();
+      btnPip.classList.add('on');
+      videoEl.addEventListener('leavepictureinpicture', () => {
+        btnPip.classList.remove('on');
+        document.body.classList.remove('pip-active');
+      }, { once: true });
+    } catch(e2) { setStatus('PiP 실패: ' + e2.message, 'err'); document.body.classList.remove('pip-active'); }
+    return;
+  }
+  const pv = document.createElement('video');
+  pv.srcObject = stream;
+  pv.muted = true;
+  pv.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0.01;top:0;left:0;pointer-events:none';
+  document.body.appendChild(pv);
+  _pipVideoEl = pv;
+  try { await pv.play(); } catch(e) { pv.remove(); _pipVideoEl = null; pipCanvas.style.display = 'none'; setStatus('PiP 실패', 'err'); document.body.classList.remove('pip-active'); return; }
+  pipActive = true;
+  function drawLoop() {
+    if (!pipActive) return;
+    ctx.drawImage(videoEl, 0, 0, vw, vh);
+    drawSubOnCanvas(ctx, vw, vh);
+    pipRafId = requestAnimationFrame(drawLoop);
+  }
+  drawLoop();
+  try {
+    await pv.requestPictureInPicture();
+    btnPip.classList.add('on');
+    pv.addEventListener('leavepictureinpicture', stopPip, { once: true });
+  } catch(e) {
+    stopPip();
+    try {
+      await videoEl.requestPictureInPicture();
+      btnPip.classList.add('on');
+      videoEl.addEventListener('leavepictureinpicture', () => {
+        btnPip.classList.remove('on');
+        document.body.classList.remove('pip-active');
+      }, { once: true });
+    } catch(e2) { setStatus('PiP 실패', 'err'); document.body.classList.remove('pip-active'); }
+  }
+}
+
 videoEl.addEventListener('timeupdate', () => {
   renderSubtitle();
   if (!videoEl.duration) return;
   const pct = (videoEl.currentTime / videoEl.duration) * 100;
-  pBar.style.width = pct + '%'; pHandle.style.left = pct + '%';
+  pBar.style.width = pct + '%';
+  pHandle.style.left = pct + '%';
   timeDsp.textContent = fmt(videoEl.currentTime) + ' / ' + fmt(videoEl.duration);
 });
-videoEl.addEventListener('play',  () => btnPlay.textContent = '⏸');
+videoEl.addEventListener('play', () => btnPlay.textContent = '⏸');
 videoEl.addEventListener('pause', () => btnPlay.textContent = '▶');
 videoEl.addEventListener('ended', () => { btnPlay.textContent = '▶'; overlay.innerHTML = ''; });
+videoEl.addEventListener('error', () => {
+  if (videoEl.error && (videoEl.error.code === 3 || videoEl.error.code === 4)) {
+    codecDetail.innerHTML = '지원하지 않는 코덱입니다.';
+    codecBanner.style.display = 'flex';
+  }
+});
 
 btnPlay.addEventListener('click', () => videoEl.paused ? videoEl.play() : videoEl.pause());
 $('btn-back').addEventListener('click', () => videoEl.currentTime = Math.max(0, videoEl.currentTime - 10));
-$('btn-fwd').addEventListener('click',  () => videoEl.currentTime = Math.min(videoEl.duration||0, videoEl.currentTime + 10));
-$('btn-mute').addEventListener('click', () => {
-  videoEl.muted = !videoEl.muted;
-  $('btn-mute').textContent = videoEl.muted ? '🔇' : '🔊';
-});
-$('vol-slider').addEventListener('input', e => {
-  videoEl.volume = +e.target.value;
-  $('btn-mute').textContent = videoEl.volume === 0 ? '🔇' : '🔊';
-});
-btnCC.addEventListener('click', () => {
-  subPanel.classList.toggle('show');
-  btnCC.classList.toggle('on', subPanel.classList.contains('show'));
-});
-pWrap.addEventListener('click', e => {
-  const r = pWrap.getBoundingClientRect();
-  videoEl.currentTime = ((e.clientX - r.left) / r.width) * (videoEl.duration || 0);
-});
+$('btn-fwd').addEventListener('click', () => videoEl.currentTime = Math.min(videoEl.duration || 0, videoEl.currentTime + 10));
+$('btn-mute').addEventListener('click', () => { videoEl.muted = !videoEl.muted; $('btn-mute').textContent = videoEl.muted ? '🔇' : '🔊'; });
+$('vol-slider').addEventListener('input', e => { videoEl.volume = +e.target.value; $('btn-mute').textContent = videoEl.volume === 0 ? '🔇' : '🔊'; });
+btnCC.addEventListener('click', () => { subPanel.classList.toggle('show'); btnCC.classList.toggle('on', subPanel.classList.contains('show')); });
+pWrap.addEventListener('click', e => { const r = pWrap.getBoundingClientRect(); videoEl.currentTime = ((e.clientX - r.left) / r.width) * (videoEl.duration || 0); });
 
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') return;
-  if      (e.code === 'Space')      { e.preventDefault(); videoEl.paused ? videoEl.play() : videoEl.pause(); }
-  else if (e.code === 'ArrowLeft')  videoEl.currentTime = Math.max(0, videoEl.currentTime - 5);
-  else if (e.code === 'ArrowRight') videoEl.currentTime = Math.min(videoEl.duration||0, videoEl.currentTime + 5);
-  else if (e.code === 'ArrowUp')   { videoEl.volume = Math.min(1, videoEl.volume+0.1); $('vol-slider').value = videoEl.volume; }
+  if (e.code === 'Space') { e.preventDefault(); videoEl.paused ? videoEl.play() : videoEl.pause(); }
+  else if (e.code === 'ArrowLeft') videoEl.currentTime = Math.max(0, videoEl.currentTime - 5);
+  else if (e.code === 'ArrowRight') videoEl.currentTime = Math.min(videoEl.duration || 0, videoEl.currentTime + 5);
+  else if (e.code === 'ArrowUp') { videoEl.volume = Math.min(1, videoEl.volume+0.1); $('vol-slider').value = videoEl.volume; }
   else if (e.code === 'ArrowDown') { videoEl.volume = Math.max(0, videoEl.volume-0.1); $('vol-slider').value = videoEl.volume; }
-  else if (e.code === 'KeyF')        toggleFs();
+  else if (e.code === 'KeyF') toggleFs();
 });
 
-function fmt(s) {
-  if (!s || isNaN(s)) return '0:00';
-  const h = Math.floor(s/3600), m = Math.floor(s%3600/60), sec = Math.floor(s%60);
-  return h ? h+':'+pad(m)+':'+pad(sec) : m+':'+pad(sec);
+function toggleFs() {
+  const el = videoContainer;
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } else {
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  }
 }
-function pad(n) { return String(n).padStart(2, '0'); }
-function setStatus(html, cls) { statusBar.innerHTML = html; statusBar.className = cls || ''; }
+function onFsChange() {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  btnFs.textContent = isFs ? '✕' : '⛶';
+  btnFs.classList.toggle('on', isFs);
+}
+btnFs.addEventListener('click', toggleFs);
+videoContainer.addEventListener('dblclick', toggleFs);
+document.addEventListener('fullscreenchange', onFsChange);
+document.addEventListener('webkitfullscreenchange', onFsChange);
+btnPip.addEventListener('click', togglePip);
+
+$('sub-size-sl').addEventListener('input', function() {
+  subFontSize = +this.value;
+  $('sub-size-val').textContent = subFontSize + 'px';
+  document.querySelectorAll('.sub-line').forEach(el => el.style.fontSize = subFontSize + 'px');
+});
+$('sub-bot-sl').addEventListener('input', function() {
+  subBottomPx = +this.value;
+  $('sub-bot-val').textContent = subBottomPx + 'px';
+  overlay.style.bottom = subBottomPx + 'px';
+});
+
+document.querySelectorAll('.sz-btn[data-h]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sz-btn[data-h]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    videoContainer.style.height = btn.dataset.h + 'px';
+    videoContainer.style.width = btn.dataset.w !== '100%' ? btn.dataset.w + 'px' : '100%';
+  });
+});
+
+$('file-input').addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+$('btn-open').addEventListener('click', () => $('file-input').click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+$('ext-sub-input').addEventListener('change', e => { if (e.target.files[0]) handleExtSub(e.target.files[0]); });
+extSubZone.addEventListener('dragover', e => { e.preventDefault(); extSubZone.classList.add('drag-over'); });
+extSubZone.addEventListener('dragleave', () => extSubZone.classList.remove('drag-over'));
+extSubZone.addEventListener('drop', e => {
+  e.preventDefault(); extSubZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleExtSub(e.dataTransfer.files[0]);
+});
 </script>
 </body>
 </html>
